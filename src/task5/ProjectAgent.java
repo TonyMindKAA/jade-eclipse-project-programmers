@@ -27,21 +27,11 @@ public class ProjectAgent extends Agent {
 	// Put agent initializations here
 	protected void setup() {
 		// Create the list of programmers
-		programmers = new ArrayList<AID>();
-		programmers_seniority = new ArrayList<Integer>();
-		System.out.println("Hallo! Projet-agent " + getAID().getName()+" is ready.");
-		Object[] args = getArguments();
-		if (args != null && args.length > 0) {
-			int[] intNumbers = pasrNumber(args);
-			minSeniority = intNumbers[0];
-			price = intNumbers[1];
-			programmersNumber = intNumbers[2];
-		}
-
-		System.out.println("Seniority is " + minSeniority + " years");
-		System.out.println("Price is " + price);
-		System.out.println("Number of participated programmers is "
-				+ programmersNumber);
+		init();
+		
+		
+		setSearchParameters();
+		printSearchInfo();
 
 		// Register the project-participating service in the yellow pages
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -60,6 +50,28 @@ public class ProjectAgent extends Agent {
 		addBehaviour(new RequestsServer());
 		// Add the behaviour serving purchase orders from programmer agents
 		addBehaviour(new ApplyOffersServer());
+	}
+
+	private void init() {
+		programmers = new ArrayList<AID>();
+		programmers_seniority = new ArrayList<Integer>();
+	}
+
+	private void setSearchParameters() {
+		Object[] args = getArguments();
+		if (args != null && args.length > 0) {
+			int[] intNumbers = pasrNumber(args);
+			minSeniority = intNumbers[0];
+			price = intNumbers[1];
+			programmersNumber = intNumbers[2];
+		}
+	}
+
+	private void printSearchInfo() {
+		System.out.println("Hallo! Projet-agent " + getAID().getName()+" is ready.");
+		System.out.println("Seniority is " + minSeniority + " years");
+		System.out.println("Price is " + price);
+		System.out.println("Number of participated programmers is "+ programmersNumber);
 	}
 
 	private int[] pasrNumber(Object[] args) {
