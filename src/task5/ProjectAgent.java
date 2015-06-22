@@ -24,15 +24,53 @@ public class ProjectAgent extends Agent {
 	// NUmber of programmers, which is required for the project
 	private int programmersNumber;
 
-	// Put agent initializations here
 	protected void setup() {
-		// Create the list of programmers
+		init();
+		setSearchParameters();
+		printSearchInfo();
+		registerServiceInYellowPage();
+		addBehaviours();
+	}
+
+
+	private void addBehaviours() {
+		// Add the behaviour serving queries from programmer agents
+		addBehaviour(new RequestsServer());
+		// Add the behaviour serving purchase orders from programmer agents
+		addBehaviour(new ApplyOffersServer());
+	}
+
+
+	private void registerServiceInYellowPage() {
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("Project");
+		sd.setName("JADE-proj-prog");
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+	}
+
+
+	private int getNumber(Object args) {
+		try {
+			return Integer.parseInt((String)args);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Programmer must have threerameters!");
+		}
+	}
+
+	private void init() {
 		programmers = new ArrayList<AID>();
 		programmers_seniority = new ArrayList<Integer>();
-		System.out.println("Hallo! Projet-agent " + getAID().getName()+" is ready.");
+	}
+
+	private void setSearchParameters() {
 		Object[] args = getArguments();
-		System.out.println(args.length+" "+Arrays.toString(args));
-		
 		if (args != null && args.length == 1) {
 			int[] intNumbers = pasrNumber(args);
 			minSeniority = intNumbers[0];
@@ -46,36 +84,13 @@ public class ProjectAgent extends Agent {
 			programmersNumber = getNumber(args[2]);
 		}
 
-		System.out.println("Seniority is " + minSeniority + " years");
-		System.out.println("Price is " + price);
-		System.out.println("Number of participated programmers is "
-				+ programmersNumber);
-
-		// Register the project-participating service in the yellow pages
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(getAID());
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType("Project");
-		sd.setName("JADE-proj-prog");
-		dfd.addServices(sd);
-		try {
-			DFService.register(this, dfd);
-		} catch (FIPAException fe) {
-			fe.printStackTrace();
-		}
-
-		// Add the behaviour serving queries from programmer agents
-		addBehaviour(new RequestsServer());
-		// Add the behaviour serving purchase orders from programmer agents
-		addBehaviour(new ApplyOffersServer());
 	}
 
-	private int getNumber(Object args) {
-		try {
-			return Integer.parseInt((String)args);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Programmer must have threerameters!");
-		}
+	private void printSearchInfo() {
+		System.out.println("Hallo! Projet-agent " + getAID().getName()+" is ready.");
+		System.out.println("Seniority is " + minSeniority + " years");
+		System.out.println("Price is " + price);
+		System.out.println("Number of participated programmers is "+ programmersNumber);
 	}
 
 	private int[] pasrNumber(Object[] args) {
