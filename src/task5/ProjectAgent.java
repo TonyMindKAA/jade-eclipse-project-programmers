@@ -31,11 +31,19 @@ public class ProjectAgent extends Agent {
 		programmers_seniority = new ArrayList<Integer>();
 		System.out.println("Hallo! Projet-agent " + getAID().getName()+" is ready.");
 		Object[] args = getArguments();
-		if (args != null && args.length > 0) {
+		System.out.println(args.length+" "+Arrays.toString(args));
+		
+		if (args != null && args.length == 1) {
 			int[] intNumbers = pasrNumber(args);
 			minSeniority = intNumbers[0];
 			price = intNumbers[1];
 			programmersNumber = intNumbers[2];
+		}
+		
+		if(args != null && args.length >= 3){
+			minSeniority = getNumber(args[0]);
+			price = getNumber(args[1]);
+			programmersNumber = getNumber(args[2]);
 		}
 
 		System.out.println("Seniority is " + minSeniority + " years");
@@ -60,6 +68,14 @@ public class ProjectAgent extends Agent {
 		addBehaviour(new RequestsServer());
 		// Add the behaviour serving purchase orders from programmer agents
 		addBehaviour(new ApplyOffersServer());
+	}
+
+	private int getNumber(Object args) {
+		try {
+			return Integer.parseInt((String)args);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Programmer must have threerameters!");
+		}
 	}
 
 	private int[] pasrNumber(Object[] args) {
